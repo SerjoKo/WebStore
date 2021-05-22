@@ -17,7 +17,8 @@ namespace WebStore.Controllers
         }
         public IActionResult Index()
         {
-            return Content("Тест контроллера!");
+            //return Content("Тест контроллера!");
+            return View();
         }
 
         public IActionResult SecondAction()
