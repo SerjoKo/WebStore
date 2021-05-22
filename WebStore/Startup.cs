@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,40 +9,79 @@ namespace WebStore
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        //    public IConfiguration Configuration { get; }
 
+        //    public Startup(IConfiguration configuration)
+        //    {
+        //        Configuration = configuration;
+        //    }
+
+
+
+        //    // This method gets called by the runtime. Use this method to add services to the container.
+        //    public void ConfigureServices(IServiceCollection services)
+        //    {
+        //        services.AddRazorPages();
+        //    }
+
+        //    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        //    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        //    {
+        //        if (env.IsDevelopment())
+        //        {
+        //            app.UseDeveloperExceptionPage();
+        //        }
+        //        else
+        //        {
+        //            app.UseExceptionHandler("/Error");
+        //        }
+
+        //        app.UseStaticFiles();
+
+        //        app.UseRouting();
+
+        //        app.UseAuthorization();
+
+        //        app.UseEndpoints(endpoints =>
+        //        {
+        //            endpoints.MapRazorPages();
+        //        });
+        //    }
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public Startup(IConfiguration Configuration)
         {
-            services.AddRazorPages();
+            this.Configuration = Configuration;
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllersWithViews();//.AddRazorRuntimeCompilation();
+        }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-            }
-
-            app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseAuthorization();
 
+            //var greetings = Configuration["Greetings"];
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapGet("/greetings", async context =>
+                {
+                    //await context.Response.WriteAsync(greetings);
+                    await context.Response.WriteAsync(Configuration["Greetings"]);
+                });
+
+                //endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllerRoute(
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
