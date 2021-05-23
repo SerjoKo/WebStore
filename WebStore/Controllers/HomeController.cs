@@ -12,9 +12,9 @@ namespace WebStore.Controllers
     {
         private static readonly List<Employee> _Employees = new()
         {
-            new Employee { id = 1, Surname = "Третьяк", Name = "Александр",  Middlename = "Иавнович",  Age = 29 },
-            new Employee { id = 2, Surname = "Нестеренко", Name = "Сергей",  Middlename = "Геннадьевич", Age = 35 },
-            new Employee { id = 3, Surname = "Краус", Name = "Артур",  Middlename = "Артурович", Age = 30 },
+            new Employee { Id = 1, Surname = "Третьяк", Name = "Александр",  MiddleName = "Иавнович",  Age = 29 },
+            new Employee { Id = 2, Surname = "Нестеренко", Name = "Сергей",  MiddleName = "Геннадьевич", Age = 35 },
+            new Employee { Id = 3, Surname = "Краус", Name = "Артур",  MiddleName = "Артурович", Age = 30 },
 
         };
         private readonly IConfiguration _Configuration; 
