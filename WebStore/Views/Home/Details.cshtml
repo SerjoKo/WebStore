@@ -4,8 +4,24 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
+    <title>Летали</title>
 </head>
 <body>
+    <table class="table table-bordered">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.SurName</td>
+                <td>@item.Name</td>
+                <td>@item.MiddleName</td>
+                <td>@item.Age</td>
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@item.Id">Детали</a>
+                </td>
+            </tr>
+        }
+    </table>
+
 </body>
 </html>
