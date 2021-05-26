@@ -39,10 +39,14 @@ namespace WebStore.Controllers
             return View(_Employees);
         }
 
-        public IActionResult Details()
+        public IActionResult Details(int id)
         {
-            
-            return View();
+            var employee = _Employees.FirstOrDefault(employe => employe.Id == id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return View(employee);
         }
     }
 }
