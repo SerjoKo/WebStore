@@ -29,6 +29,7 @@ namespace WebStore
             }
 
             app.UseRouting();
+            app.UseStaticFiles();
 
 
             //var greetings = Configuration["Greetings"];
