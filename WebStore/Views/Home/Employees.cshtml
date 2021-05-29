@@ -1,18 +1,10 @@
 ﻿
 @model IEnumerable<WebStore.Models.Employee>
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@*@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers*@
 
 <!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Employees</title>
-</head>
-<body>
-    <h3>Сотрудники магазина</h3>
-    <hr />
-
+<div class="container">
     <table class="table">
         <thead>
             <tr>
@@ -45,5 +37,4 @@
     <p>
         <a href="/">На главную</a>
     </p>
-</body>
-</html>
+</div>
