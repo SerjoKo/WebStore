@@ -12,12 +12,12 @@ namespace WebStore.Controllers
     {
         private static readonly List<Employee> _Employees = new()
         {
-            new Employee { Id = 1, SurName = "Третьяк", Name = "Александр",  MiddleName = "Иавнович",  Age = 29 },
-            new Employee { Id = 2, SurName = "Нестеренко", Name = "Сергей",  MiddleName = "Геннадьевич", Age = 35 },
-            new Employee { Id = 3, SurName = "Краус", Name = "Артур",  MiddleName = "Артурович", Age = 30 },
+            new Employee { Id = 1, SurName = "Третьяк", Name = "Александр", MiddleName = "Иавнович", Age = 29 },
+            new Employee { Id = 2, SurName = "Нестеренко", Name = "Сергей", MiddleName = "Геннадьевич", Age = 35 },
+            new Employee { Id = 3, SurName = "Краус", Name = "Артур", MiddleName = "Артурович", Age = 30 },
 
         };
-        private readonly IConfiguration _Configuration; 
+        private readonly IConfiguration _Configuration;
 
         public HomeController(IConfiguration Configuration)
         {
@@ -48,5 +48,15 @@ namespace WebStore.Controllers
             }
             return View(employee);
         }
+
+        public IActionResult Error404() => View();
+        public IActionResult Blog() => View();
+        public IActionResult BlogSingle() => View();
+        public IActionResult Cart() => View();
+        public IActionResult Checkout() => View();
+        public IActionResult ContactUs() => View();
+        public IActionResult Login() => View();
+        public IActionResult ProductDetails() => View();
+        public IActionResult Shop() => View();
     }
 }
