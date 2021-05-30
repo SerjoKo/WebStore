@@ -12,7 +12,7 @@ namespace WebStore.Inftastructure.MidleWare
         private readonly RequestDelegate _Next;
         private readonly ILogger<TestMidleWare> _Logger;
 
-        public TestMidleWare(RequestDelegate next,  ILogger<TestMidleWare> logger)
+        public TestMidleWare(RequestDelegate next, ILogger<TestMidleWare> logger)
         {
             _Next = next;
             _Logger = logger;
