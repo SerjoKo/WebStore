@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Inftastructure.MidleWare;
 
 namespace WebStore
 {
@@ -29,8 +30,12 @@ namespace WebStore
             }
 
             app.UseRouting();
+            
             app.UseStaticFiles();
 
+            app.UseMiddleware<TestMidleWare>();
+
+            app.UseWelcomePage("/WelcomePage");
 
             //var greetings = Configuration["Greetings"];
             app.UseEndpoints(endpoints =>
