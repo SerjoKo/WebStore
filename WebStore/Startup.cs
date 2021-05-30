@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebStore.Inftastructure.MidleWare;
+using WebStore.Servicess;
+using WebStore.Servicess.Interfaces;
 
 namespace WebStore
 {
@@ -19,6 +21,7 @@ namespace WebStore
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
