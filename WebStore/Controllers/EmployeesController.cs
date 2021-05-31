@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using WebStore.Models;
+using WebStore.Servicess.Interfaces;
 
 namespace WebStore.Controllers
 {   
     //[Route("Staf")]
     public class EmployeesController : Controller
     {
-        public EmployeesController()
-        {
+        private readonly IEmployeesData _EmployeesData;
 
+        public EmployeesController(IEmployeesData EmployeesData)
+        {
+            _EmployeesData = EmployeesData;
         }
+
         //[Route("info-id-{id}")]
         public IActionResult Details(int id)
         {
