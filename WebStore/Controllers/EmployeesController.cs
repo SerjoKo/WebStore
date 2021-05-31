@@ -19,7 +19,7 @@ namespace WebStore.Controllers
         //[Route("info-id-{id}")]
         public IActionResult Details(int id)
         {
-            var employee = _Employees.FirstOrDefault(employe => employe.Id == id);
+            var employee = _EmployeesData.Get(id);//_Employees.FirstOrDefault(employe => employe.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -30,7 +30,7 @@ namespace WebStore.Controllers
         //[Route("all")]
         public IActionResult Index()
         {
-            return View(_Employees);
+            return View(_EmployeesData.GetAll());
         }
     }
 }
