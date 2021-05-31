@@ -6,7 +6,7 @@ using WebStore.Servicess.Interfaces;
 using WebStore.ViewModels;
 
 namespace WebStore.Controllers
-{   
+{
     //[Route("Staf")]
     public class EmployeesController : Controller
     {
@@ -33,7 +33,7 @@ namespace WebStore.Controllers
         {
             return View(_EmployeesData.GetAll());
         }
-        
+
         public IActionResult Create()
         {
             return View("Edit", new EmployeeViewModel());
@@ -44,7 +44,7 @@ namespace WebStore.Controllers
             if (id is null)
                 return View(new EmployeeViewModel());
             var employee = _EmployeesData.Get((int)id);
-            
+
             if (employee is null) return NotFound();
 
             var view_model = new EmployeeViewModel
@@ -55,7 +55,7 @@ namespace WebStore.Controllers
                 MiddleName = employee.MiddleName,
                 Age = employee.Age,
             };
-            return View(view_model); 
+            return View(view_model);
         }
 
         [HttpPost]
@@ -80,9 +80,31 @@ namespace WebStore.Controllers
 
         public IActionResult Delete(int id)
         {
-            return View();
+            if (id <= 0)
+                return BadRequest();
+
+            var employee = _EmployeesData.Get(id);
+
+            if (employee is null)
+                return NotFound();
+
+
+            return View(new EmployeeViewModel
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                SurName = employee.SurName,
+                MiddleName = employee.MiddleName,
+                Age = employee.Age,
+            }
+            );
+        }
+
+        [HttpPost]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _EmployeesData.Delete(id);
+            return RedirectToAction("Index");
         }
     }
-
-    
 }

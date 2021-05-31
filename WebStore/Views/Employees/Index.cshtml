@@ -17,6 +17,7 @@
                 <th>Возраст</th>
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +31,7 @@
                 <td>@employee.MiddleName</td>
                 <td>@employee.Age</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@employee.Id" title="Редактирование">
+                    <a asp-action="Details" asp-route-id="@employee.Id" title="Детальная информация">
                         <i class="fa-info"></i>
                     </a>
                 </td>
@@ -38,6 +39,12 @@
                     <a asp-action="Edit" asp-route-id="@employee.Id" title="Редактирование">
                         <i class="fa-edit"></i>
                     </a>
+                </td>
+                <td>
+                    <form asp-action="DeleteConfirmed" asp-route-id="@employee.Id">
+                        <button type="submit"></button>
+                        <i class="fa fa-trash-o text-danger"></i>
+                    </form>
                 </td>
             </tr>
             }
