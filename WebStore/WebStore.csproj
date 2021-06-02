@@ -14,4 +14,8 @@
     <Folder Include="Новая папка\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebStore.Domain\WebStore.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
