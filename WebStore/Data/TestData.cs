@@ -8,7 +8,7 @@ using WebStore.Servicess.Interfaces;
 
 namespace WebStore.Data
 {
-    public static class TastData
+    public static class TestData
     {
         public static List<Employee> Employees { get; } = new()
         {
@@ -17,7 +17,7 @@ namespace WebStore.Data
             new Employee { Id = 3, SurName = "Краус", Name = "Артур", MiddleName = "Артурович", Age = 30 },
         };
 
-        public static IEnumerable<Section> Section { get; } = new[]
+        public static IEnumerable<Section> Sections { get; } = new[]
         {
             new Section{ Id = 1, Name = "Sportswear", Order = 0},
             new Section{ Id = 2, Name = "Nike", Order = 0, ParentId = 1},
@@ -51,51 +51,15 @@ namespace WebStore.Data
             new Section{ Id = 30, Name = "Shoes", Order = 9}
         };
 
-        //public static IEnumerable<Brand> Brand { get; } = new[]
-        //        _brands = new List<Brand>()
-        //{
-        //new Brand()
-        //{
-        //Id = 1,
-        //Name = "Acne",
-        //Order = 0
-        //},
-        //new Brand()
-        //{
-        //Id = 2,
-
-        //Name = "Grüne Erde",
-        //Order = 1
-        //},
-        //new Brand()
-        //{
-        //Id = 3,
-        //Name = "Albiro",
-        //Order = 2
-        //},
-        //new Brand()
-        //{
-        //Id = 4,
-        //Name = "Ronhill",
-        //Order = 3
-        //},
-        //new Brand()
-        //{
-        //Id = 5,
-        //Name = "Oddmolly",
-        //Order = 4
-        //},
-        //new Brand()
-        //{
-        //Id = 6,
-        //Name = "Boudestijn",
-        //Order = 5
-        //},
-        //new Brand()
-        //{
-        //Id = 7,
-        //Name = "Rösch creative culture",
-        //Order = 6
-        //    }
+        public static IEnumerable<Brand> Brands { get; } = new[]
+        {
+            new Brand{ Id = 1, Name = "Acne", Order = 0},
+            new Brand{ Id = 2, Name = "Grüne Erde", Order = 1},
+            new Brand{ Id = 3, Name = "Albiro", Order = 2},
+            new Brand{ Id = 4, Name = "Ronhill", Order = 3},
+            new Brand{ Id = 5, Name = "Oddmolly", Order = 4},
+            new Brand{ Id = 6, Name = "Boudestijn", Order = 5},
+            new Brand{ Id = 7, Name = "Rösch creative culture", Order = 6},
+        };
     }
 }

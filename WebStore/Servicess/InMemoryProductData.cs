@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebStore.Data;
 using WebStore.Domain.Entitys;
 using WebStore.Servicess.Interfaces;
 
@@ -11,12 +12,12 @@ namespace WebStore.Servicess
     {
         public IEnumerable<Brand> GetBrands()
         {
-            throw new NotImplementedException();
+            return TestData.Brands;
         }
-
+        
         public IEnumerable<Section> GetSections()
         {
-            throw new NotImplementedException();
+            return TestData.Sections;
         }
     }
 }

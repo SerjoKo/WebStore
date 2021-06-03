@@ -14,18 +14,18 @@ namespace WebStore.Servicess
 
         public InMemoryEmployeesData()
         {
-            _MaxId = TastData.Employees.Max(i => i.Id);
+            _MaxId = TestData.Employees.Max(i => i.Id);
         }
 
         public int Add(Employee employee)
         {
             if (employee is null) throw new ArgumentNullException(nameof(employee));
 
-            if (TastData.Employees.Contains(employee)) return employee.Id;
+            if (TestData.Employees.Contains(employee)) return employee.Id;
 
             employee.Id = ++_MaxId;
 
-            TastData.Employees.Add(employee);
+            TestData.Employees.Add(employee);
 
             return employee.Id;
         }
@@ -36,18 +36,18 @@ namespace WebStore.Servicess
 
             if (db_item is null) return false;
 
-            return TastData.Employees.Remove(db_item);
+            return TestData.Employees.Remove(db_item);
         }
 
-        public Employee Get(int id) => TastData.Employees.SingleOrDefault(employee => employee.Id == id);
+        public Employee Get(int id) => TestData.Employees.SingleOrDefault(employee => employee.Id == id);
 
-        public IEnumerable<Employee> GetAll() => TastData.Employees;
+        public IEnumerable<Employee> GetAll() => TestData.Employees;
 
         public void Update(Employee employee)
         {
             if (employee is null) throw new ArgumentNullException(nameof(employee));
 
-            if (TastData.Employees.Contains(employee)) return;
+            if (TestData.Employees.Contains(employee)) return;
 
             var db_item = Get(employee.Id);
 
