@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebStore.Servicess.Interfaces;
+using WebStore.ViewModels;
 
 namespace WebStore.Components
 {
@@ -18,7 +19,17 @@ namespace WebStore.Components
 
         public IViewComponentResult Invoke()
         {
-            return View();
+            return View(GetBrands());
         }
+
+
+        public IEnumerable<BrandViewModel> GetBrands() =>
+            _ProductData.GetBrands()
+               .OrderBy(b => b.Order)
+               .Select(b => new BrandViewModel
+               {
+                   Id = b.Id,
+                   Name = b.Name,
+               });
     }
 }
