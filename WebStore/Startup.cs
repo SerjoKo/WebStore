@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Diagnostics;
 using WebStore.Inftastructure.MidleWare;
 using WebStore.Servicess;
 using WebStore.Servicess.Interfaces;
@@ -49,7 +48,7 @@ namespace WebStore
             }
 
             app.UseRouting();
-            
+
             app.UseStaticFiles();
 
             app.UseMiddleware<TestMidleWare>();
