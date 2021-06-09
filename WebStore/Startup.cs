@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using WebStore.DAL.Context;
 using WebStore.Inftastructure.MidleWare;
 using WebStore.Servicess;
 using WebStore.Servicess.Interfaces;
@@ -24,6 +26,9 @@ namespace WebStore
         {
             //services.AddScoped<ITestService, TestService>();
             //services.AddScoped<IPrinter, DebugPrinter>();
+
+            services.AddDbContext<WebStoreDB>(opt => 
+                opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
 
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
 
