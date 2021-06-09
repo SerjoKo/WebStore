@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using WebStore.DAL.Context;
 using WebStore.DAL.Context.WebStore.DAL.Context;
+using WebStore.Data;
 using WebStore.Inftastructure.MidleWare;
 using WebStore.Servicess;
 using WebStore.Servicess.Interfaces;
@@ -32,6 +33,8 @@ namespace WebStore
                 opt.UseSqlServer(
                     Configuration.GetConnectionString("WSDBSQL")));
 
+            services.AddTransient<WSDBInitializer>();
+
             //services.AddDbContext<WebStoreDB>(opt => 
             //    opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
 
@@ -51,6 +54,10 @@ namespace WebStore
             //var test_service = services.GetRequiredService<ITestService>();
 
             //test_service.Test();
+
+            using (var scope = services.CreateScope())
+                scope.ServiceProvider.GetRequiredService<WSDBInitializer>().Initialize();
+                
 
             if (env.IsDevelopment())
             {
