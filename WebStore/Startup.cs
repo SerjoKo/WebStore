@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using WebStore.DAL.Context;
+using WebStore.DAL.Context.WebStore.DAL.Context;
 using WebStore.Inftastructure.MidleWare;
 using WebStore.Servicess;
 using WebStore.Servicess.Interfaces;
@@ -27,8 +28,12 @@ namespace WebStore
             //services.AddScoped<ITestService, TestService>();
             //services.AddScoped<IPrinter, DebugPrinter>();
 
-            services.AddDbContext<WebStoreDB>(opt => 
-                opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
+            services.AddDbContext<WebStoreDB>(opt =>
+                opt.UseSqlServer(
+                    Configuration.GetConnectionString("WSDBSQL")));
+
+            //services.AddDbContext<WebStoreDB>(opt => 
+            //    opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
 
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
 

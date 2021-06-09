@@ -12,7 +12,7 @@ namespace WebStore.Domain.Entitys
     public class Product : NamedEntity, IOrderedEntity
     {
         public int Order { get; set; }
-        
+
         public int SectionId { get; set; }
 
         [ForeignKey(nameof(SectionId))]
