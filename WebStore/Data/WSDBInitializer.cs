@@ -53,11 +53,53 @@ namespace WebStore.Data
                 Logger.LogInformation("Инициализации таблицы товаров не требуется");
             }
 
+            // Секции        
+            Logger.LogInformation("Инициализации таблицы секций");
+
+            using (db.Database.BeginTransaction())
+            {
+                db.Sections.AddRange(TestData.Sections);
+
+                db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Sections] ON");
+                db.SaveChanges();
+                db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Sections] OFF");
+
+                db.Database.CommitTransaction();
+            }
+
+            Logger.LogInformation("Инициализации таблицы секций завершена");
+
+            // Бренды        
+            Logger.LogInformation("Инициализации таблицы брендов");
+
+            using (db.Database.BeginTransaction())
+            {
+                db.Brands.AddRange(TestData.Brands);
+
+                db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Brands] ON");
+                db.SaveChanges();
+                db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Brands] OFF");
+
+                db.Database.CommitTransaction();
+            }
+
+            Logger.LogInformation("Инициализации таблицы брендов завершена");
+
+            // Товары
             Logger.LogInformation("Инициализации таблицы товаров");
 
+            using (db.Database.BeginTransaction())
+            {
+                db.Products.AddRange(TestData.Products);
+
+                db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Products] ON");
+                db.SaveChanges();
+                db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Products] OFF");
+
+                db.Database.CommitTransaction();
+            }
 
             Logger.LogInformation("Инициализации таблицы товаров завершена");
-
         }
     }
 }
