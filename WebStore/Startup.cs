@@ -10,7 +10,8 @@ using WebStore.DAL.Context;
 using WebStore.DAL.Context.WebStore.DAL.Context;
 using WebStore.Data;
 using WebStore.Inftastructure.MidleWare;
-using WebStore.Servicess;
+using WebStore.Servicess.InMemory;
+using WebStore.Servicess.InSQL;
 using WebStore.Servicess.Interfaces;
 
 namespace WebStore
@@ -40,8 +41,14 @@ namespace WebStore
 
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
 
-            services.AddSingleton<IProductData, InMemoryProductData>();
+            // оставить на всякий случай
+            //services.AddSingleton<IProductData, InMemoryProductData>();
+            //services.AddScoped<IProductData, SqlProductData>();
 
+            if (Configuration["ProductsDataSource"] == "db")
+                services.AddScoped<IProductData, SqlProductData>();
+            else
+                services.AddSingleton<IProductData, InMemoryProductData>();
             //services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 
             //services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
