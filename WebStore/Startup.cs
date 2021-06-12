@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using WebStore.DAL.Context;
 using WebStore.DAL.Context.WebStore.DAL.Context;
 using WebStore.Data;
 using WebStore.Domain.Entitys.Identity;
