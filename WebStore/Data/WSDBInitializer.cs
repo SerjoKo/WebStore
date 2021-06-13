@@ -22,7 +22,7 @@ namespace WebStore.Data
         public void Initialize()
         {
             Logger.LogInformation("Инициализация БД");
-            
+
             if (db.Database.GetAppliedMigrations().Any())
             {
                 Logger.LogInformation("Миграция БД");
