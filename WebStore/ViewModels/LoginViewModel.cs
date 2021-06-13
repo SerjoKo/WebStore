@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebStore.ViewModels
 {
-    public class LogiViewModel
+    public class LoginViewModel
     {
         [Required]
         [Display(Name = "Имя пользователя")]

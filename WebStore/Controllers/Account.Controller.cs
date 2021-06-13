@@ -48,7 +48,37 @@ namespace WebStore.Controllers
         }
         #endregion
 
-        public IActionResult Login() => View();
+        public IActionResult Login(string ReturnUrl) => View(new LoginViewModel { ReturnUrl = ReturnUrl });
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel Model)
+        {
+            if (!ModelState.IsValid) return View(Model);
+
+            var login_result = await _signInManager.PasswordSignInAsync(
+                Model.UserName, Model.Password, Model.Remember,
+#if DEBUG
+                false
+#else
+                true
+#endif
+                );
+            
+            if (login_result.Succeeded)
+            {
+                //return Redirect(Model.ReturnUrl); НЕ БЕЗОПАСНО
+
+                //if (Url.IsLocalUrl(Model.ReturnUrl))
+                //    return Redirect(Model.ReturnUrl);
+                //else
+                //    return RedirectToAction("Index", "Home");
+
+                return LocalRedirect(Model.ReturnUrl);
+            }
+
+            ModelState.AddModelError("", "Ошибка логина, или пароля");
+            return View(Model);
+        }
 
         public IActionResult Logout() => RedirectToAction("Index", "Home");
 
