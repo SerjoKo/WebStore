@@ -1,56 +1,79 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebStore.DAL.Context.WebStore.DAL.Context;
+using WebStore.Domain.Entitys.Identity;
 
 namespace WebStore.Data
 {
     public class WSDBInitializer
     {
-        private readonly WebStoreDB db;
-        private readonly ILogger<WSDBInitializer> Logger;
+        private readonly WebStoreDB _db;
+        private readonly UserManager<User> _UserManager;
+        private readonly RoleManager<Role> _RoleManager;
+        private readonly ILogger<WSDBInitializer> _Logger;
 
-        public WSDBInitializer(WebStoreDB db, ILogger<WSDBInitializer> Logger)
+        public WSDBInitializer(
+            WebStoreDB db, 
+            UserManager<User> UserManager,
+            RoleManager<Role> RoleManager,
+            ILogger<WSDBInitializer> Logger)
         {
-            this.db = db;
-            this.Logger = Logger;
+            _db = db;
+            _UserManager = UserManager;
+            _RoleManager = RoleManager;
+            _Logger = Logger;
         }
 
         public void Initialize()
         {
-            Logger.LogInformation("Инициализация БД");
+            _Logger.LogInformation("Инициализация БД");
 
-            if (db.Database.GetAppliedMigrations().Any())
+            if (_db.Database.GetAppliedMigrations().Any())
             {
-                Logger.LogInformation("Миграция БД");
+                _Logger.LogInformation("Миграция БД");
 
-                db.Database.Migrate();
+                _db.Database.Migrate();
 
-                Logger.LogInformation("Завершение миграции БД");
+                _Logger.LogInformation("Завершение миграции БД");
             }
             else
-                Logger.LogInformation("Миграция не требуется");
-
+                _Logger.LogInformation("Миграция не требуется");
+            
+            #region Инициализация товаров
             try
             {
                 InitializeProduct();
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Ошибка инициализации товаров");
+                _Logger.LogError(e, "Ошибка инициализации товаров");
+            }
+            #endregion
+
+
+            try
+            {
+                InitializeIdentityAcync().GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError(e, "Ошибка при инициализации данных в БД ситемы identity");
             }
 
-            Logger.LogInformation("Завершение инициализации");
+            _Logger.LogInformation("Завершение инициализации");
         }
 
         private void InitializeProduct()
         {
-            if (db.Products.Any())
+            if (_db.Products.Any())
             {
-                Logger.LogInformation("Инициализации таблицы товаров не требуется");
+                _Logger.LogInformation("Инициализации таблицы товаров не требуется");
             }
 
             #region Грохнул
@@ -123,21 +146,76 @@ namespace WebStore.Data
 
             }
 
-            using (db.Database.BeginTransaction())
+            using (_db.Database.BeginTransaction())
             {
-                db.Sections.AddRange(TestData.Sections);
-                db.Brands.AddRange(TestData.Brands);
+                _db.Sections.AddRange(TestData.Sections);
+                _db.Brands.AddRange(TestData.Brands);
 
-                db.Products.AddRange(TestData.Products);
+                _db.Products.AddRange(TestData.Products);
 
                 //db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Products] ON");
-                db.SaveChanges();
+                _db.SaveChanges();
                 //db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Products] OFF");
 
-                db.Database.CommitTransaction();
+                _db.Database.CommitTransaction();
             }
 
-            Logger.LogInformation("Инициализации таблицы товаров завершена");
+            _Logger.LogInformation("Инициализации таблицы товаров завершена");
+        }
+
+        private async Task InitializeIdentityAcync()
+        {
+            _Logger.LogInformation("Инициализация БД системы identuty");
+            
+            var time = Stopwatch.StartNew();
+
+            async Task CheckRole(string RoleName)
+            {
+                if (!await _RoleManager.RoleExistsAsync(RoleName))
+                {
+                    _Logger.LogInformation("Роль {0} отсутсвует. Создаю...", RoleName);
+                    await _RoleManager.CreateAsync(new Role { Name = Role.Administrators });
+                    _Logger.LogInformation("Роль {0} создана", RoleName);
+                }
+            }
+
+            await CheckRole(Role.Administrators);
+            await CheckRole(Role.Users);
+
+            if (await _UserManager.FindByNameAsync(User.Administrator) is null)
+            {
+                _Logger.LogInformation("Пользователь {0} отсутствует. Создаю...", User.Administrator);
+
+                var admin = new User
+                {
+                    UserName = User.Administrator
+                };
+
+                var creat_result = await _UserManager.CreateAsync(admin, User.AdmPass);
+                
+                if(creat_result.Succeeded)
+                {
+                    _Logger.LogInformation("Пользователь {0} сщздан.", User.Administrator);
+
+                    await _UserManager.AddToRoleAsync(admin, Role.Administrators);
+
+                    _Logger.LogInformation("Пользователь {0} наделён ролью {1}", User.Administrator, Role.Administrators);
+                }
+                else
+                {
+                    var errors = creat_result.Errors.Select(e => e.Description).ToArray();
+                    _Logger.LogError("Учётная запись администратора не создана по причине: {0}",
+                        string.Join(",", errors));
+
+                    throw new InvalidOperationException($"Ошибка при создании пользователя " +
+                        $"{User.Administrator}:{string.Join(",", errors)}");
+                }
+            }
+
+                //if (!await _RoleManager.RoleExistsAsync(Role.Administrators))
+                //    await _RoleManager.CreateAsync(new Role { Name = Role.Administrators });
+
+                _Logger.LogInformation("Инициализация БД системы identuty завершена {0} c", time.Elapsed.TotalSeconds);
         }
     }
 }
