@@ -174,31 +174,24 @@ namespace WebStore.Data
                 if (!await _RoleManager.RoleExistsAsync(RoleName))
                 {
                     _Logger.LogInformation("Роль {0} отсутсвует. Создаю...", RoleName);
-                    await _RoleManager.CreateAsync(new Role { Name = Role.Administrators });
+                    await _RoleManager.CreateAsync(new Role { Name = RoleName });
                     _Logger.LogInformation("Роль {0} создана", RoleName);
                 }
             }
-
             await CheckRole(Role.Administrators);
             await CheckRole(Role.Users);
-
             if (await _UserManager.FindByNameAsync(User.Administrator) is null)
             {
                 _Logger.LogInformation("Пользователь {0} отсутствует. Создаю...", User.Administrator);
-
                 var admin = new User
                 {
                     UserName = User.Administrator
                 };
-
                 var creat_result = await _UserManager.CreateAsync(admin, User.AdmPass);
-                
                 if(creat_result.Succeeded)
                 {
                     _Logger.LogInformation("Пользователь {0} сщздан.", User.Administrator);
-
                     await _UserManager.AddToRoleAsync(admin, Role.Administrators);
-
                     _Logger.LogInformation("Пользователь {0} наделён ролью {1}", User.Administrator, Role.Administrators);
                 }
                 else
