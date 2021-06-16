@@ -7,6 +7,7 @@ using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -19,9 +20,10 @@ namespace WebStore.Controllers
         }
         
         #region Регистрация
+        [AllowAnonymous]
         public IActionResult Register() => View(new RegisterUserViewModel());
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
         public async Task<IActionResult> Register(RegisterUserViewModel Model)
         {
             if (!ModelState.IsValid) return View(Model);
@@ -55,7 +57,7 @@ namespace WebStore.Controllers
         public IActionResult Login(string ReturnUrl) => 
             View(new LoginViewModel { ReturnUrl = ReturnUrl });
         
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel Model)
         {
             if (!ModelState.IsValid) return View(Model);
@@ -90,7 +92,7 @@ namespace WebStore.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-
+        [AllowAnonymous]
         public IActionResult AccessDenied() => View();
     }
 }
