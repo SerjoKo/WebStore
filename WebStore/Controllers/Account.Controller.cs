@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebStore.Domain.Entitys.Identity;
@@ -50,8 +51,10 @@ namespace WebStore.Controllers
         }
         #endregion
 
-        public IActionResult Login(string ReturnUrl) => View(new LoginViewModel { ReturnUrl = ReturnUrl });
-
+        [AllowAnonymous]
+        public IActionResult Login(string ReturnUrl) => 
+            View(new LoginViewModel { ReturnUrl = ReturnUrl });
+        
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel Model)
         {
