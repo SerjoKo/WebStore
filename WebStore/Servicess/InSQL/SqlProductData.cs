@@ -20,9 +20,9 @@ namespace WebStore.Servicess.InSQL
         
         public IEnumerable<Product> GetProducts(ProductFilter Filter = null)
         {
-            IQueryable<Product> query = _db.Products;
-                //.Include(p => p.Brand)
-                //.Include(p => p.Section);
+            IQueryable<Product> query = _db.Products
+                .Include(p => p.Brand)
+                .Include(p => p.Section);
 
             if (Filter?.SectionId is { } section_id)
                 query = query.Where(product => product.SectionId == section_id);
@@ -36,8 +36,8 @@ namespace WebStore.Servicess.InSQL
         public Product GetProductById(int Id)
         {
             return _db.Products
-                //.Include(p => p.Brand)
-                //.Include(p => p.Section)
+                .Include(p => p.Brand)
+                .Include(p => p.Section)
                 .SingleOrDefault(p => p.Id == Id);                
         }
     }
