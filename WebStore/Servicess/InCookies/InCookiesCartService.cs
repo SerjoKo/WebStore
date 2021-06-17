@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Linq;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
-using System.Linq;
 using WebStore.Domain;
 using WebStore.Domain.Entitys;
 using WebStore.Inftastructure.Mapping;
@@ -15,7 +17,7 @@ namespace WebStore.Servicess.InCookies
         private readonly IProductData _ProductData;
         private readonly string _CartName;
 
-        private Cart Cart
+        private Cart_Product Cart
         {
             get
             {
@@ -24,15 +26,15 @@ namespace WebStore.Servicess.InCookies
                 var cookies = context.Response.Cookies;
 
                 var cart_cookie = context.Request.Cookies[_CartName];
-                if(cart_cookie is null)
+                if (cart_cookie is null)
                 {
-                    var cart = new Cart();
+                    var cart = new Cart_Product();
                     cookies.Append(_CartName, JsonConvert.SerializeObject(cart));
                     return cart;
                 }
 
                 ReplaceCookies(cookies, cart_cookie);
-                return JsonConvert.DeserializeObject<Cart>(cart_cookie);
+                return JsonConvert.DeserializeObject<Cart_Product>(cart_cookie);
             }
             set => ReplaceCookies(
                     _HttpContextAccesor.HttpContext!.Response.Cookies, JsonConvert.SerializeObject(value));
