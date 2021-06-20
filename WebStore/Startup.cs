@@ -75,7 +75,8 @@ namespace WebStore
             //services.AddDbContext<WebStoreDB>(opt => 
             //    opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
 
-            services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
+            services.AddScoped<IEmployeesData, SqlEmployeesData>();
+            //services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
 
             // оставить на всякий случай
             //services.AddSingleton<IProductData, InMemoryProductData>();
