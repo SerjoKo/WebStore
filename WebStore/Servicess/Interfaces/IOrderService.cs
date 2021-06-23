@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using WebStore.Domain.Entitys.Orders;
 using WebStore.ViewModels;
 
-namespace WebStore.Servicess.Interfaces
+namespace WebStore.Services.Interfaces
 {
-    public class IOrderService
+    public interface IOrderService
     {
         Task<IEnumerable<Order>> GetUserOrder(string UserName);
 
