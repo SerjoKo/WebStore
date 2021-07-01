@@ -11,6 +11,7 @@ using WebStore.DAL.Context.WebStore.DAL.Context;
 using WebStore.Data;
 using WebStore.Domain.Entitys.Identity;
 using WebStore.Inftastructure.MidleWare;
+using WebStore.Services.Interfaces;
 using WebStore.Servicess.InCookies;
 using WebStore.Servicess.InMemory;
 using WebStore.Servicess.InSQL;
@@ -75,8 +76,8 @@ namespace WebStore
             //services.AddDbContext<WebStoreDB>(opt => 
             //    opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
 
-            services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
-
+            services.AddScoped<IEmployeesData, SqlEmployeesData>();
+            //services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
             // оставить на всякий случай
             //services.AddSingleton<IProductData, InMemoryProductData>();
             //services.AddScoped<IProductData, SqlProductData>();
@@ -86,6 +87,8 @@ namespace WebStore
                 services.AddScoped<IProductData, SqlProductData>();
             else
                 services.AddSingleton<IProductData, InMemoryProductData>();
+
+            services.AddScoped<IOrderService, SqlOrderService>();
             //services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 
             //services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
@@ -129,6 +132,10 @@ namespace WebStore
                     await context.Response.WriteAsync(Configuration["Greetings"]);
                 });
 
+
+                endpoints.MapControllerRoute(
+                    name: "areas", 
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 //endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllerRoute(
                     "default",
