@@ -1,19 +1,11 @@
 ﻿
 @model IEnumerable<WebStore.Models.Employee>
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@*@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers*@
 
 <!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Employees</title>
-</head>
-<body>
-    <h3>Сотрудники магазина</h3>
-    <hr />
-
-    <table>
+<div class="container">
+    <table class="table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -35,7 +27,10 @@
                     <td>@employee.MiddleName</td>
                     <td>@employee.Age</td>
                     <td>
-                        <a asp-controller="Home" asp-action="Details" asp-route-id="@employee.Id">edit</a>
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@employee.Id" title="Редактирование">
+                            edit
+                            <i class="fa-edit"></i>
+                        </a>
                     </td>
                 </tr>
             }
@@ -43,7 +38,6 @@
     </table>
 
     <p>
-        <a href="/">На главную</a>
+        <a asp-controller="Home" asp-action="Index">На главную</a>
     </p>
-</body>
-</html>
+</div>
