@@ -22,7 +22,7 @@ namespace WebStore.Components
 
             var parent_sections = sections.Where(s => s.ParentId == null);
 
-            var parent_sections_view = parent_sections
+            var parent_sections_views = parent_sections
                .Select(s => new SectionViewModel
                {
                    Id = s.Id,
@@ -31,7 +31,8 @@ namespace WebStore.Components
                })
                .ToList();
 
-            foreach (var parent_section in parent_sections_view)
+
+            foreach (var parent_section in parent_sections_views)
             {
                 var childs = sections.Where(s => s.ParentId == parent_section.Id);
 
@@ -49,10 +50,10 @@ namespace WebStore.Components
                 parent_section.ChildSection.Sort((a, b) => 
                        Comparer<int>.Default.Compare(a.Order, b.Order));
             }
-            parent_sections_view.Sort((a, b) =>
+            parent_sections_views.Sort((a, b) =>
                        Comparer<int>.Default.Compare(a.Order, b.Order));
 
-            return View(parent_sections_view);
+            return View(parent_sections_views);
         }
     }
 }

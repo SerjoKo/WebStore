@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using WebStore.DAL.Context;
 using WebStore.DAL.Context.WebStore.DAL.Context;
 using WebStore.Data;
+using WebStore.Domain.Entitys.Identity;
 using WebStore.Inftastructure.MidleWare;
 using WebStore.Servicess.InMemory;
 using WebStore.Servicess.InSQL;
@@ -35,6 +36,40 @@ namespace WebStore
                     Configuration.GetConnectionString("WSDBSQL")));
 
             services.AddTransient<WSDBInitializer>();
+
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<WebStoreDB>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(opt => {
+#if DEBUG
+                opt.Password.RequireDigit = false;
+                opt.Password.RequiredLength = 3;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredUniqueChars = 3;
+#endif
+                opt.User.RequireUniqueEmail = false;
+                //opt.User.AllowedUserNameCharacters = "Набор разрешенных символов";
+                opt.Lockout.AllowedForNewUsers = false;
+                opt.Lockout.MaxFailedAccessAttempts = 3;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+
+            });
+
+            services.ConfigureApplicationCookie(opt =>
+            {
+                opt.Cookie.Name = "WS_C";
+                opt.Cookie.HttpOnly = true;
+                opt.ExpireTimeSpan = TimeSpan.FromDays(5);
+
+                opt.LoginPath = "/Account/Login";
+                opt.LogoutPath = "/Account/Logout";
+                opt.AccessDeniedPath = "/Account/AccessDenied";
+
+                opt.SlidingExpiration = true;
+            });
 
             //services.AddDbContext<WebStoreDB>(opt => 
             //    opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
@@ -72,6 +107,9 @@ namespace WebStore
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseStaticFiles();
 

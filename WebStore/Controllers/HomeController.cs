@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
+using WebStore.Servicess.Interfaces;
+using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
@@ -11,9 +14,21 @@ namespace WebStore.Controllers
         {
             _Configuration = Configuration;
         }
-        public IActionResult Index()
+        public IActionResult Index([FromServices] IProductData ProductData)
         {
             //return Content("Тест контроллера!");
+            var products = ProductData
+            .GetProducts()
+            .Take(6)
+            .Select(p => new ProductViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                ImgUrl = p.ImgUrl,
+            });
+
+            ViewBag.Products = products;
             return View();
         }
 
