@@ -5,7 +5,7 @@ using WebStore.Data;
 using WebStore.Models;
 using WebStore.Servicess.Interfaces;
 
-namespace WebStore.Servicess
+namespace WebStore.Servicess.InMemory
 {
     public class InMemoryEmployeesData : IEmployeesData
     {

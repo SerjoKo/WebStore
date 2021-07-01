@@ -1,12 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using WebStore.DAL.Context;
+using WebStore.DAL.Context.WebStore.DAL.Context;
+using WebStore.Data;
 using WebStore.Inftastructure.MidleWare;
-using WebStore.Servicess;
+using WebStore.Servicess.InMemory;
+using WebStore.Servicess.InSQL;
 using WebStore.Servicess.Interfaces;
 
 namespace WebStore
@@ -25,10 +30,25 @@ namespace WebStore
             //services.AddScoped<ITestService, TestService>();
             //services.AddScoped<IPrinter, DebugPrinter>();
 
+            services.AddDbContext<WebStoreDB>(opt =>
+                opt.UseSqlServer(
+                    Configuration.GetConnectionString("WSDBSQL")));
+
+            services.AddTransient<WSDBInitializer>();
+
+            //services.AddDbContext<WebStoreDB>(opt => 
+            //    opt.UseSqlServer(Configuration.GetConnectionString("WSDBSQL")));
+
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
 
-            services.AddSingleton<IProductData, InMemoryProductData>();
+            // оставить на всякий случай
+            //services.AddSingleton<IProductData, InMemoryProductData>();
+            //services.AddScoped<IProductData, SqlProductData>();
 
+            if (Configuration["ProductsDataSource"] == "db")
+                services.AddScoped<IProductData, SqlProductData>();
+            else
+                services.AddSingleton<IProductData, InMemoryProductData>();
             //services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
 
             //services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
@@ -41,6 +61,10 @@ namespace WebStore
             //var test_service = services.GetRequiredService<ITestService>();
 
             //test_service.Test();
+
+            using (var scope = services.CreateScope())
+                scope.ServiceProvider.GetRequiredService<WSDBInitializer>().Initialize();
+                
 
             if (env.IsDevelopment())
             {
