@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebStore.Domain.Entitys.Identity;
@@ -6,6 +7,7 @@ using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -18,9 +20,10 @@ namespace WebStore.Controllers
         }
         
         #region Регистрация
+        [AllowAnonymous]
         public IActionResult Register() => View(new RegisterUserViewModel());
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
         public async Task<IActionResult> Register(RegisterUserViewModel Model)
         {
             if (!ModelState.IsValid) return View(Model);
@@ -34,6 +37,8 @@ namespace WebStore.Controllers
 
             if (register_result.Succeeded)
             {
+                //await _userManager.AddToRoleAsync(user, Role.Users);
+                await _userManager.AddToRoleAsync(user, Role.Users);
                 await _signInManager.SignInAsync(user, false);
 
                 return RedirectToAction("Index", "Home");
@@ -48,9 +53,11 @@ namespace WebStore.Controllers
         }
         #endregion
 
-        public IActionResult Login(string ReturnUrl) => View(new LoginViewModel { ReturnUrl = ReturnUrl });
-
-        [HttpPost, ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public IActionResult Login(string ReturnUrl) => 
+            View(new LoginViewModel { ReturnUrl = ReturnUrl });
+        
+        [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel Model)
         {
             if (!ModelState.IsValid) return View(Model);
@@ -85,7 +92,7 @@ namespace WebStore.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-
+        [AllowAnonymous]
         public IActionResult AccessDenied() => View();
     }
 }

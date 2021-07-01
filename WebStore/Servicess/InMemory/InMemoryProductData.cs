@@ -31,5 +31,10 @@ namespace WebStore.Servicess.InMemory
         {
             return TestData.Sections;
         }
+
+        public Product GetProductById(int Id)
+        {
+            return TestData.Products.SingleOrDefault(p => p.Id == Id);
+        }
     }
 }

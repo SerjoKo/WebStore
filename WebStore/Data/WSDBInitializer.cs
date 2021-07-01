@@ -1,59 +1,84 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebStore.DAL.Context.WebStore.DAL.Context;
+using WebStore.Domain.Entitys.Identity;
 
 namespace WebStore.Data
 {
     public class WSDBInitializer
     {
-        private readonly WebStoreDB db;
-        private readonly ILogger<WSDBInitializer> Logger;
+        private readonly WebStoreDB _db;
+        private readonly UserManager<User> _UserManager;
+        private readonly RoleManager<Role> _RoleManager;
+        private readonly ILogger<WSDBInitializer> _Logger;
 
-        public WSDBInitializer(WebStoreDB db, ILogger<WSDBInitializer> Logger)
+        public WSDBInitializer(
+            WebStoreDB db,
+            UserManager<User> UserManager,
+            RoleManager<Role> RoleManager,
+            ILogger<WSDBInitializer> Logger)
         {
-            this.db = db;
-            this.Logger = Logger;
+            _db = db;
+            _UserManager = UserManager;
+            _RoleManager = RoleManager;
+            _Logger = Logger;
         }
 
         public void Initialize()
         {
-            Logger.LogInformation("Инициализация БД");
+            _Logger.LogInformation("Инициализация БД...");
+            var timer = Stopwatch.StartNew();
 
-            if (db.Database.GetAppliedMigrations().Any())
+            //_db.Database.EnsureDeleted();
+            //_db.Database.EnsureCreated();
+
+            if (_db.Database.GetPendingMigrations().Any())
             {
-                Logger.LogInformation("Миграция БД");
-
-                db.Database.Migrate();
-
-                Logger.LogInformation("Завершение миграции БД");
+                _Logger.LogInformation("Миграция БД...");
+                _db.Database.Migrate();
+                _Logger.LogInformation("Миграция БД выполнена за {0}c", timer.Elapsed.TotalSeconds);
             }
             else
-                Logger.LogInformation("Миграция не требуется");
+                _Logger.LogInformation("Миграция БД не требуется. {0}c", timer.Elapsed.TotalSeconds);
 
             try
             {
-                InitializeProduct();
+                InitializeProducts();
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Ошибка инициализации товаров");
+                _Logger.LogError(e, "Ошибка при инициализации товаров в БД");
+                throw;
             }
 
-            Logger.LogInformation("Завершение инициализации");
+            try
+            {
+                InitializeIdentityAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError(e, "Ошибка при инициализации данных БД системы Identity");
+                throw;
+            }
+
+            _Logger.LogInformation("Инициализация БД завершена за {0} с", timer.Elapsed.TotalSeconds);
         }
 
-        private void InitializeProduct()
+        private void InitializeProducts()
         {
-            if (db.Products.Any())
+            if (_db.Products.Any())
             {
-                Logger.LogInformation("Инициализации таблицы товаров не требуется");
+                _Logger.LogInformation("БД не нуждается в инициализации товаров");
+                return;
             }
 
-            #region Грохнул
+             #region Грохнул
             // Секции        
             //Logger.LogInformation("Инициализации таблицы секций");
 
@@ -90,21 +115,19 @@ namespace WebStore.Data
             //Logger.LogInformation("Инициализации таблицы товаров");
             #endregion
 
-            var section_pool = TestData.Sections.ToDictionary(section => section.Id);
-            var brand_pool = TestData.Brands.ToDictionary(brand => brand.Id);
+            var timer = Stopwatch.StartNew();
+
+            var sections_pool = TestData.Sections.ToDictionary(section => section.Id);
+            var brands_pool = TestData.Brands.ToDictionary(brand => brand.Id);
 
             foreach (var section in TestData.Sections.Where(s => s.ParentId != null))
-            {
-                section.Parent = section_pool[(int)section.ParentId!];
-            }
+                section.Parent = sections_pool[(int)section.ParentId!];
 
             foreach (var product in TestData.Products)
             {
-                product.Section = section_pool[product.SectionId];
+                product.Section = sections_pool[product.SectionId];
                 if (product.BrandId is { } brand_id)
-                {
-                    product.Brand = brand_pool[brand_id];
-                }
+                    product.Brand = brands_pool[brand_id];
 
                 product.Id = 0;
                 product.SectionId = 0;
@@ -118,26 +141,71 @@ namespace WebStore.Data
             }
 
             foreach (var brand in TestData.Brands)
-            {
                 brand.Id = 0;
 
-            }
 
-            using (db.Database.BeginTransaction())
+            using (_db.Database.BeginTransaction())
             {
-                db.Sections.AddRange(TestData.Sections);
-                db.Brands.AddRange(TestData.Brands);
+                _db.Sections.AddRange(TestData.Sections);
+                _db.Brands.AddRange(TestData.Brands);
+                _db.Products.AddRange(TestData.Products);
 
-                db.Products.AddRange(TestData.Products);
-
-                //db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Products] ON");
-                db.SaveChanges();
-                //db.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Products] OFF");
-
-                db.Database.CommitTransaction();
+                _db.SaveChanges();
+                _db.Database.CommitTransaction();
             }
 
-            Logger.LogInformation("Инициализации таблицы товаров завершена");
+            _Logger.LogInformation("Инициализация товаров выполнена за. {0} c", timer.Elapsed.TotalSeconds);
+        }
+
+        private async Task InitializeIdentityAsync()
+        {
+            _Logger.LogInformation("Инициализация БД системы Identity");
+            var timer = Stopwatch.StartNew();
+
+            async Task CheckRole(string RoleName)
+            {
+                if (!await _RoleManager.RoleExistsAsync(RoleName))
+                {
+                    _Logger.LogInformation("Роль {0} отсутствует. Создаю...", RoleName);
+                    await _RoleManager.CreateAsync(new Role { Name = RoleName });
+                    _Logger.LogInformation("Роль {0} создана успешно", RoleName);
+                }
+            }
+
+            await CheckRole(Role.Administrators);
+            await CheckRole(Role.Users);
+
+            if (await _UserManager.FindByNameAsync(User.Administrator) is null)
+            {
+                _Logger.LogInformation("Пользователь {0} отсутствует. Создаю...", User.Administrator);
+
+                var admin = new User
+                {
+                    UserName = User.Administrator
+                };
+
+                var creation_result = await _UserManager.CreateAsync(admin, User.AdmPass);
+                if (creation_result.Succeeded)
+                {
+                    _Logger.LogInformation("Пользователь {0} успешно создан", User.Administrator);
+
+                    await _UserManager.AddToRoleAsync(admin, Role.Administrators);
+
+                    _Logger.LogInformation("Пользователь {0} наделён ролью {1}",
+                        User.Administrator, Role.Administrators);
+                }
+                else
+                {
+                    var errors = creation_result.Errors.Select(e => e.Description).ToArray();
+                    _Logger.LogError("Учётная запись администратора не создана по причине: {0}",
+                        string.Join(",", errors));
+
+                    throw new InvalidOperationException($"Ошибка при создании пользователя {User.Administrator}:{string.Join(",", errors)}");
+                }
+            }
+
+            _Logger.LogInformation("Инициализация данных БД системы Identity выполнена за {0} c",
+                timer.Elapsed.TotalSeconds);
         }
     }
 }
